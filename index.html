@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KYC Security Lab</title>
+<style>
+:root{color-scheme:light;--line:#dce4ef;--text:#18263b;--muted:#64748b;--blue:#2563eb}
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:var(--text);font:14px/1.5 system-ui,Segoe UI,Arial,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 24px;border-bottom:1px solid var(--line);background:#fff}
+.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:12px;background:#e4edff;display:grid;place-items:center;font-weight:900;color:#2455a7;border:1px solid #c5d7fa}
+h1{font-size:18px;margin:0}header p{margin:2px 0 0;color:var(--muted);font-size:12px}.header-actions{display:flex;align-items:center;gap:10px}.face-swap-top{font:inherit;font-weight:750;color:#fff;background:#2563eb;border:1px solid #2563eb;padding:10px 14px;border-radius:9px;cursor:pointer}.face-swap-top:hover{background:#1e50c2}.face-module{display:none;max-width:1480px;margin:20px auto;padding:0 20px}.face-module.active{display:block}.face-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(260px,1fr);gap:18px}.face-card{border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 8px 28px #243c5b0d}.face-card-head{padding:14px 17px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.swap-video-wrap{position:relative;background:#0b0e13;min-height:0;display:block}.swap-video{display:block!important;visibility:visible!important;opacity:1!important;position:relative;width:100%;height:auto;aspect-ratio:16/9;max-height:72vh;object-fit:contain;background:#0b0e13;z-index:2}.swap-big-play{position:absolute;z-index:5;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:88px;height:78px;border:0;border-radius:16px;background:rgba(55,55,55,.92);color:#fff;font:inherit;cursor:pointer;box-shadow:0 2px 12px #0004}.swap-big-play span{font-size:28px;line-height:1}.swap-big-play small{font-size:12px}.swap-big-play[hidden]{display:none!important}.swap-video-wrap.is-playing .swap-big-play{display:none}.victim-pane{padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px}.victim-pane img{display:block;width:min(100%,420px);max-height:62vh;object-fit:contain;border-radius:12px}.victim-label{font-size:15px;font-weight:800;margin-top:13px;color:var(--text)}.face-module-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border-top:1px solid var(--line)}.back-main{font:inherit;font-weight:700;color:#26364d;background:#fff;border:1px solid #c9d5e5;padding:9px 12px;border-radius:9px;cursor:pointer}@media(max-width:900px){.face-module{padding:0 12px}.face-layout{grid-template-columns:1fr}.swap-video-wrap,.victim-pane{min-height:250px}header{padding:12px;flex-wrap:wrap}}.pill{font-size:10px;letter-spacing:.08em;font-weight:800;padding:7px 10px;border-radius:99px;border:1px solid #efdaa8;color:#80520a;background:#fff8e8}
+main{max-width:1480px;margin:auto;padding:20px;display:grid;grid-template-columns:minmax(0,1.8fr) minmax(280px,1fr);gap:18px}
+.panel{border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 8px 28px #243c5b0d}
+.ph{padding:14px 17px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.ph h2{font-size:13px;margin:0}.muted{color:var(--muted)}.small{font-size:11px}
+.stage{position:relative;min-height:420px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+video{display:none;width:100%;height:auto;max-height:65vh;object-fit:contain;background:#000;opacity:0;transition:opacity 1.6s ease;position:relative;z-index:2}
+video.visible{opacity:1}
+video.fade-out{opacity:0;transition:opacity 1.6s ease}
+.frame-hold{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:3;opacity:1;transition:opacity 1.6s ease}
+.caption{display:none!important}
+.id-details{margin-top:18px;padding-top:15px;border-top:1px solid var(--line)}.id-details h2{font-size:13px;margin:0 0 12px}.detail-grid{display:grid;grid-template-columns:1fr;gap:10px}.detail-field label{display:block;font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px}.detail-field input{width:100%;padding:9px 10px;border:1px solid #d5deea;border-radius:8px;background:#f8fafc;color:#26364d}.generation{display:none;position:relative;min-height:145px;margin-top:13px;padding:18px;border:1px solid #d6e0ed;border-radius:10px;background:linear-gradient(135deg,#f7faff,#e9f1ff);overflow:hidden}.generation.active{display:flex;flex-direction:column;justify-content:center;gap:12px}.gen-title{font-weight:750;font-size:13px}.gen-sub{font-size:11px;color:var(--muted)}.gen-track{height:7px;background:#dbe5f4;border-radius:99px;overflow:hidden}.gen-track span{display:block;width:35%;height:100%;border-radius:99px;background:linear-gradient(90deg,#60a5fa,#2563eb,#93c5fd);animation:generate-progress 1.8s ease-in-out forwards}.scan-line{position:absolute;left:0;right:0;top:0;height:2px;background:#60a5fa;box-shadow:0 0 14px #3b82f6;animation:scan 1.5s linear infinite}@keyframes generate-progress{from{width:5%}to{width:100%}}@keyframes scan{from{top:0}to{top:100%}}
+.corner{position:absolute;top:12px;right:12px;padding:6px 9px;background:#ffffffed;border:1px solid #dce4ef;border-radius:8px;font-size:10px;color:#52647e}
+.caption{position:absolute;left:12px;bottom:12px;max-width:90%;padding:8px 11px;border-radius:8px;background:#ffffffed;border:1px solid #d6e0ed;font-size:12px;box-shadow:0 2px 8px #0000000d}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:13px 15px;border-top:1px solid var(--line)}
+button{font:inherit;font-weight:700;color:#26364d;background:#fff;border:1px solid #c9d5e5;padding:10px 12px;border-radius:9px;cursor:pointer}button:hover{background:#f3f7fd}button.primary{background:var(--blue);color:white;border-color:var(--blue)}button.primary:hover{background:#1e50c2}button.danger{background:#fff1f2;color:#9f2734;border-color:#f0c5ca}button:disabled{opacity:.42;cursor:not-allowed}input,textarea,select{font:inherit;color:var(--text)}summary{padding:2px 0}
+.status{margin-left:auto;color:var(--muted);font-size:11px}.section{padding:15px 17px}
+.right{display:flex;flex-direction:column;gap:16px}.note{font-size:11px;color:var(--muted);line-height:1.5}
+.idcard{position:relative;overflow:hidden;border:1px solid #d6e0ed;border-radius:10px;background:#fff}
+.notice{max-width:1440px;margin:0 auto 20px;padding:10px 14px;border-radius:10px;border:1px solid #efdaa8;background:#fff9e9;color:#76551b;font-size:11px}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:12px}.stage{min-height:300px}header{padding:12px}.notice{margin:0 12px 16px}}
+</style></head><body>
+<header><div class="brand"><div class="logo">KSL</div><div><h1>KYC Security Lab</h1><p>Offline mock verification</p></div></div><div class="header-actions"><button id="faceSwapTop" class="face-swap-top" type="button">Face Swap</button><div class="pill">TRAINING SIMULATION</div></div></header>
+<section id="faceModule" class="face-module" aria-label="Face Swap module"><div class="face-layout"><section class="face-card"><div class="face-card-head">Face Swap video</div><div class="swap-video-wrap" id="swapVideoWrap"><video id="swapVideo" class="swap-video" src="./media/face_swap_video_slow_0_5x_silent.mp4" preload="metadata" playsinline muted webkit-playsinline controls controlslist="nodownload"></video><button id="swapBigPlay" class="swap-big-play" type="button" aria-label="Play Face Swap video"><span aria-hidden="true">▶</span><small>Play video</small></button><p id="swapVideoError" class="small muted" hidden>Video could not be loaded. Confirm the media folder is beside index.html.</p></div><div class="face-module-toolbar"><span class="muted small">Click the video to play or pause. Audio is disabled in this module.</span><button id="backToMain" class="back-main" type="button">← Back to KYC</button></div></section><section class="face-card"><div class="face-card-head">Reference image</div><div class="victim-pane"><img src="media/face.png" alt="Victim face"><div class="victim-label">Victim face</div></div></section></div></section>
+<main id="mainApp">
+<section class="panel">
+ <div class="stage"><img id="frameHold" class="frame-hold" alt="" aria-hidden="true"><video id="player" playsinline preload="auto"></video><div class="corner" id="clipLabel">VIDEO OFF</div><div class="caption" id="caption">Click Start KYC call to begin</div></div>
+ <div class="toolbar"><button class="primary" id="start">▶ Start KYC call</button><button id="pause" disabled>Ⅱ Pause</button><button id="resume" disabled>▶ Resume</button><button class="danger" id="end" disabled>■ End call</button><span class="status" id="status">Ready</span></div>
+</section>
+<div class="right">
+ <section class="panel"><div class="section">
+  <button class="primary" id="generate">Generate identity card</button>
+  <div id="generation" class="generation" aria-live="polite">
+   <div class="scan-line"></div><div class="gen-title">Generating identity card…</div><div class="gen-sub" id="genSub">Preparing identity details and card layout</div><div class="gen-track"><span></span></div>
+  </div>
+  <div id="card" style="margin-top:13px;display:none;opacity:0;transition:opacity .8s ease"><img src="media/mock_card_reference.png" alt="Supplied identity card image" style="width:100%;height:auto;display:block;border:1px solid #d6e0ed;border-radius:10px;background:#fff"></div>
+  <div class="id-details"><h2>Details for the identity</h2><div class="detail-grid">
+   <div class="detail-field"><label for="firstName">First name</label><input id="firstName" value="MYNAME" placeholder="MYNAME"></div>
+   <div class="detail-field"><label for="lastName">Last Name</label><input id="lastName" value="NONAME" placeholder="NONAME"></div>
+   <div class="detail-field"><label for="dob">Date Of Birth</label><input id="dob" value="31-13-1300" placeholder="31-13-1300"></div>
+   <div class="detail-field"><label for="cardNo">Card No.</label><input id="cardNo" value="XXXX-YYYY-ZZZZ" placeholder="XXXX-YYYY-ZZZZ"></div>
+  </div></div>
+ </div></section>
+
+</div>
+</main>
+<div id="mainNotice" class="notice">Offline training simulation. The permission prompts are simulated; no real camera, microphone, or KYC service is accessed.</div>
+<script>
+const $=id=>document.getElementById(id), player=$('player'), frameHold=$('frameHold');
+const sources={front:'media/first.mp4',turn:'media/turnleftyrighty.mp4',showcard:'media/showidd.mp4'};
+const audioSources={look:'media/look_camera.mp3',turn:'media/turn_head.mp3',showcard:'media/show_id.mp3',endcall:'media/endcall.mp3'};
+let running=false,paused=false,token=0,stepIndex=0,stageTimer=null,activeAudio=null;
+function setStatus(s){$('status').textContent=s}
+function clearTimers(){clearTimeout(stageTimer);stageTimer=null}
+function stopAudio(){if(activeAudio){activeAudio.pause();activeAudio.currentTime=0;activeAudio.onended=null;activeAudio.onerror=null;activeAudio=null}}
+function showBlack(){player.pause();player.removeAttribute('src');player.load();player.classList.remove('visible','fade-out');player.style.display='none';frameHold.style.display='none';frameHold.removeAttribute('src');player.onended=null;$('clipLabel').textContent='VIDEO OFF';$('caption').textContent='Click Start KYC call to begin'}
+function holdCurrentFrame(){try{if(!player.videoWidth||!player.videoHeight)return false;const c=document.createElement('canvas');c.width=player.videoWidth;c.height=player.videoHeight;c.getContext('2d').drawImage(player,0,0,c.width,c.height);frameHold.src=c.toDataURL('image/jpeg',0.92);frameHold.style.opacity='1';frameHold.style.display='block';return true}catch(e){return false}}
+function askPermission(kind){
+ return new Promise(resolve=>{
+  const shade=document.createElement('div');
+  shade.style.cssText='position:fixed;inset:0;background:#0005;display:grid;place-items:center;z-index:9999;padding:18px';
+  const box=document.createElement('div');
+  box.style.cssText='width:min(440px,100%);background:#fff;border:1px solid #cfd8e6;border-radius:14px;padding:22px;box-shadow:0 18px 60px #0003;color:#1c293d;font:14px/1.5 system-ui,Segoe UI,Arial,sans-serif';
+  const msg=document.createElement('div');msg.style.cssText='font-size:16px;font-weight:650;margin-bottom:20px';msg.textContent='The webpage is requesting access to '+kind;
+  const buttons=document.createElement('div');buttons.style.cssText='display:flex;justify-content:flex-end;gap:10px';
+  const dis=document.createElement('button');dis.textContent='Disallow';dis.style.cssText='padding:9px 16px;border:1px solid #c7d2e2;border-radius:8px;background:white;color:#26364d;font-weight:650;cursor:pointer';
+  const allow=document.createElement('button');allow.textContent='Allow';allow.style.cssText='padding:9px 16px;border:1px solid #2563eb;border-radius:8px;background:#2563eb;color:white;font-weight:650;cursor:pointer';
+  const done=v=>{shade.remove();resolve(v)};
+  dis.onclick=()=>done(false);allow.onclick=()=>done(true);buttons.append(dis,allow);box.append(msg,buttons);shade.append(box);document.body.append(shade);
+ });
+}
+function delay(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
+function prepareClip(key,myToken){
+ return new Promise(resolve=>{
+  player.pause();player.classList.remove('visible','fade-out');player.onloadedmetadata=null;player.onerror=null;player.onended=null;
+  player.removeAttribute('src');player.load();player.src=sources[key];player.style.display='block';player.style.opacity='0';$('clipLabel').textContent='LOCAL VIDEO';
+  let settled=false;
+  const done=ok=>{if(settled)return;settled=true;if(myToken!==token)return resolve(false);resolve(ok)};
+  player.onloadeddata=()=>{if(myToken!==token)return done(false);try{player.currentTime=0}catch(e){};done(true)};
+  player.onerror=()=>{$('clipLabel').textContent='VIDEO UNAVAILABLE';done(false)};
+  player.load();
+ });
+}
+async function revealClip(key,myToken,playNow=true,onEnded=null){
+ const ok=await prepareClip(key,myToken);if(!ok||myToken!==token||!running||paused)return false;
+ player.currentTime=0;player.style.display='block';player.style.opacity='';player.classList.remove('fade-out');
+ player.onended=()=>{player.pause();if(onEnded&&myToken===token&&running&&!paused)onEnded()};
+ if(playNow)player.play().catch(err=>{console.warn('Video playback failed',err);setStatus('Video playback error')});
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{if(myToken===token&&running&&!paused){player.classList.add('visible');if(frameHold.style.display==='block'){frameHold.style.opacity='0';setTimeout(()=>{if(myToken===token){frameHold.style.display='none';frameHold.style.opacity='1';frameHold.removeAttribute('src')}},1650)}}}));
+ return true;
+}
+async function transitionToClip(key,myToken,onEnded,playNow=true){
+ if(myToken!==token||!running||paused)return;
+ // Preserve the current frame underneath the next clip so there is no fade-to-black gap.
+ const held=holdCurrentFrame();
+ if(held){player.classList.remove('visible');player.style.opacity='0'}
+ await revealClip(key,myToken,playNow,onEnded);
+}
+function playPrompt(key,myToken,onEnded){
+ stopAudio();const audio=new Audio(audioSources[key]);activeAudio=audio;audio.preload='auto';
+ audio.onended=()=>{if(myToken!==token||!running||paused)return;activeAudio=null;if(onEnded)onEnded()};
+ audio.onerror=()=>{if(myToken!==token||!running||paused)return;setStatus('Audio file could not be played');activeAudio=null};
+ audio.play().then(()=>setStatus('Playing recorded voice')).catch(err=>{console.error('Audio playback failed',err);setStatus('Audio playback error')});
+}
+function runStep(myToken){
+ if(!running||paused||myToken!==token)return;clearTimers();
+ if(stepIndex===0){
+  // Reveal a still first frame before audio; start the person's movement only after the recording ends.
+  $('caption').textContent='Please look directly at the camera.';setStatus('Showing camera view');
+  revealClip('front',myToken,false,()=>{}).then(ok=>{
+   if(!ok||myToken!==token||!running||paused)return;
+   setTimeout(()=>{
+    if(myToken!==token||!running||paused)return;
+    playPrompt('look',myToken,()=>{
+     player.onended=()=>{player.pause();if(myToken===token&&running&&!paused){stepIndex=1;runStep(myToken)}};
+     player.currentTime=0;player.play().catch(()=>setStatus('Video playback error'));
+    });
+   },2250);
+  });
+  return;
+ }
+ if(stepIndex===1){
+  $('caption').textContent='Please turn your head slowly to the left, then to the right.';
+  playPrompt('turn',myToken,()=>{$('caption').textContent='Head movement';transitionToClip('turn',myToken,()=>{stepIndex=2;runStep(myToken)})});return;
+ }
+ if(stepIndex===2){
+  $('caption').textContent='Please hold up your demo identity card.';
+  playPrompt('showcard',myToken,()=>{$('caption').textContent='Displaying demo identity card';transitionToClip('showcard',myToken,async()=>{
+   // After the ID clip, show a still face while the completion audio plays.
+   $('caption').textContent='Please hold still';
+   await transitionToClip('front',myToken,()=>{},false);
+   if(myToken!==token||!running||paused)return;
+   player.pause();player.currentTime=0;
+   playPrompt('endcall',myToken,()=>{
+    // Repeat the opening clip as the closing shot, then finish while keeping its final frame visible.
+    $('caption').textContent='Thank you';
+    transitionToClip('front',myToken,()=>complete());
+   });
+  })});
+ }
+}
+async function start(){
+ if(running)return;token++;const t=token;running=true;paused=false;stepIndex=0;showBlack();
+ $('start').disabled=true;$('pause').disabled=false;$('resume').disabled=true;$('end').disabled=false;
+ const camera=await askPermission('camera');if(t!==token||!running)return;
+ if(!camera){running=false;setStatus('Camera access disallowed');$('caption').textContent='Camera access was disallowed';$('start').disabled=false;$('pause').disabled=true;$('end').disabled=true;showBlack();return}
+ const mic=await askPermission('microphone');if(t!==token||!running)return;
+ if(!mic){running=false;setStatus('Microphone access disallowed');$('caption').textContent='Microphone access was disallowed';$('start').disabled=false;$('pause').disabled=true;$('end').disabled=true;showBlack();return}
+ runStep(t);
+}
+function complete(){
+ if(!running)return;running=false;paused=false;clearTimers();stopAudio();player.pause();player.classList.add('visible');player.style.display='block';$('caption').textContent='Mock KYC simulation complete';$('clipLabel').textContent='SIMULATION COMPLETE';setStatus('Complete');$('start').disabled=false;$('pause').disabled=true;$('resume').disabled=true;$('end').disabled=true;
+}
+function endCall(){token++;running=false;paused=false;clearTimers();stopAudio();showBlack();setStatus('Call ended');$('start').disabled=false;$('pause').disabled=true;$('resume').disabled=true;$('end').disabled=true}
+$('start').onclick=start;$('end').onclick=endCall;
+$('pause').onclick=()=>{if(!running||paused)return;paused=true;player.pause();if(activeAudio)activeAudio.pause();$('pause').disabled=true;$('resume').disabled=false;setStatus('Paused')};
+$('resume').onclick=()=>{if(!running||!paused)return;paused=false;$('pause').disabled=false;$('resume').disabled=true;setStatus('Resuming');if(activeAudio){activeAudio.play().catch(()=>setStatus('Audio playback error'))}else if(player.src){player.play().catch(()=>{});}};
+$('generate').onclick=async()=>{const btn=$('generate'),gen=$('generation'),card=$('card');btn.disabled=true;card.style.display='none';card.style.opacity='0';gen.classList.add('active');$('genSub').textContent='Preparing identity details and card layout';await delay(1900);gen.classList.remove('active');card.style.display='block';requestAnimationFrame(()=>{card.style.opacity='1'});btn.disabled=false;setStatus('Identity card generated')};
+showBlack();
+
+const faceModule=$('faceModule'), mainApp=$('mainApp'), mainNotice=$('mainNotice'), swapVideo=$('swapVideo'), swapVideoWrap=$('swapVideoWrap'); const swapBigPlay=$('swapBigPlay');
+function openFaceSwap(){mainApp.style.display='none';mainNotice.style.display='none';faceModule.classList.add('active');swapVideo.pause();swapVideo.muted=true;swapVideo.volume=0;const msg=$('swapVideoError');if(msg){msg.hidden=true;msg.textContent='';}requestAnimationFrame(()=>{try{swapVideo.currentTime=0;}catch(e){}swapVideo.load();if(swapBigPlay){swapBigPlay.hidden=false;swapBigPlay.querySelector('small').textContent='Play video';}window.scrollTo({top:0,behavior:'smooth'});});}
+function backToKyc(){swapVideo.pause();try{swapVideo.currentTime=0}catch(e){}faceModule.classList.remove('active');mainApp.style.display='grid';mainNotice.style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
+async function toggleSwapVideo(){swapVideo.muted=true;swapVideo.volume=0;try{if(swapVideo.paused){await swapVideo.play()}else{swapVideo.pause()}}catch(e){console.error('Face Swap video playback failed:',e);}}
+swapBigPlay.addEventListener('click',async()=>{swapVideo.muted=true;swapVideo.volume=0;try{await swapVideo.play();swapBigPlay.hidden=true;}catch(e){console.error('Face Swap playback error',e);swapBigPlay.hidden=false;swapBigPlay.querySelector('small').textContent='Playback failed';}});swapVideo.addEventListener('play',()=>{swapBigPlay.hidden=true;});swapVideo.addEventListener('pause',()=>{if(swapVideo.currentTime>0 && !swapVideo.ended)swapBigPlay.hidden=false;});swapVideo.addEventListener('ended',()=>{swapBigPlay.hidden=false;swapBigPlay.querySelector('small').textContent='Play again';}); $('faceSwapTop').addEventListener('click',openFaceSwap);$('backToMain').addEventListener('click',backToKyc);
+swapVideo.addEventListener('error',()=>{const err=swapVideo.error;console.error('Could not load Face Swap video',err,'source:',swapVideo.currentSrc);const msg=$('swapVideoError');if(msg){msg.hidden=false;msg.textContent='Video failed to load ('+(err?('media error '+err.code):'unknown error')+'). Confirm that media/face_swap_video_slow_0_5x_silent.mp4 exists beside index.html.';}});swapVideo.addEventListener('loadedmetadata',()=>{const msg=$('swapVideoError');if(msg){msg.hidden=true;msg.textContent='';}});
+
+// Independent fallback player wiring
+(function(){var v=document.getElementById('swapVideo'),b=document.getElementById('swapBigPlay'),w=document.getElementById('swapVideoWrap');if(!v||!b||!w)return;v.controls=true;v.muted=true;v.volume=0;b.hidden=false;b.addEventListener('click',async function(ev){ev.preventDefault();ev.stopPropagation();try{v.muted=true;v.volume=0;await v.play();b.hidden=true;w.classList.add('is-playing');}catch(err){console.error(err);b.hidden=false;var m=document.getElementById('swapVideoError');if(m){m.hidden=false;m.textContent='Could not start playback: '+(err&&err.message?err.message:'unknown error');}}});v.addEventListener('play',function(){b.hidden=true;w.classList.add('is-playing')});v.addEventListener('pause',function(){w.classList.remove('is-playing');if(!v.ended)b.hidden=false});v.addEventListener('ended',function(){w.classList.remove('is-playing');b.hidden=false;b.querySelector('small').textContent='Play again'});})();
+</script></body></html>
